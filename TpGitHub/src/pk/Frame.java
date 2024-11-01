@@ -20,6 +20,7 @@ public class Frame extends JFrame {
 				try {
 					Frame frame = new Frame();
 					frame.setVisible(true);
+					System.out.println("gg");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
