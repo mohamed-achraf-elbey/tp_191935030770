@@ -1,50 +1,45 @@
 package pk;
 
-import java.util.Scanner;
+import java.awt.EventQueue;
 
 public class Main {
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        EventQueue.invokeLater(() -> {
+            // Initialize the Frame for client and server display
+            Frame frameClient = new Frame(200);
+            frameClient.setVisible(true);
 
-        System.out.println("Enter 'server' to start the server or 'client' to start the client:");
-        String choice = scanner.nextLine();
+            Frame frameServer = new Frame(1000);
+            frameServer.setVisible(true);
 
-        if (choice.equalsIgnoreCase("server")) {
-            System.out.print("Enter port for the server: ");
-            int port = scanner.nextInt();
+            // Start server in a new thread
+            new Thread(() -> {
+                int port = frameServer.getPort(); 
+                UDPServer server = new UDPServer(port);
 
-            UDPServer server = new UDPServer(port);
-            server.startServer();
-        } else if (choice.equalsIgnoreCase("client")) {
-            scanner.nextLine();  // consume newline
+                // Update GUI with received messages
+                server.setMessageListener(message -> {
+                    frameServer.setReceivedMessage(message);
+                });
 
-            System.out.print("Enter sender IP: ");
-            String senderIP = scanner.nextLine();
+                server.startServer();
+            }).start();
 
-            System.out.print("Enter receiver IP: ");
-            String receiverIP = scanner.nextLine();
+            // Start client in a new thread
+            new Thread(() -> {
+                String senderIP = frameClient.getSenderIP();
+                String receiverIP = frameClient.getReceiverIP();
+                int port = frameClient.getPort();
 
-            System.out.print("Enter port for the server: ");
-            int port = scanner.nextInt();
-            scanner.nextLine();  // consume newline
+                UDPClient client = new UDPClient(senderIP, receiverIP, port);
 
-            UDPClient client = new UDPClient(senderIP, receiverIP, port);
-
-            while (true) {
-                System.out.print("Enter message to send (type 'exit' to quit): ");
-                String message = scanner.nextLine();
-
-                if (message.equalsIgnoreCase("exit")) {
-                    System.out.println("Exiting client...");
-                    break;
-                }
-
-                client.sendMessage(message);
-            }
-        } else {
-            System.out.println("Invalid choice. Please enter 'server' or 'client'.");
-        }
-
-        scanner.close();
+                // Send message when button is clicked
+                frameClient.getButtonSend().addActionListener(e -> {
+                    String message = frameClient.getMessage();
+                    client.sendMessage(message);
+                });
+            }).start();
+        });
     }
 }

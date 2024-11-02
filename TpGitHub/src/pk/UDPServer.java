@@ -7,9 +7,14 @@ import java.net.InetAddress;
 public class UDPServer {
 
     private int port;
+    private MessageListener messageListener;
 
     public UDPServer(int port) {
         this.port = port;
+    }
+
+    public void setMessageListener(MessageListener listener) {
+        this.messageListener = listener;
     }
 
     public void startServer() {
@@ -26,9 +31,19 @@ public class UDPServer {
                 int senderPort = receivePacket.getPort();
 
                 System.out.println("Received message: " + message + " from " + senderAddress + ":" + senderPort);
+
+                // Update the GUI with the received message
+                if (messageListener != null) {
+                    messageListener.onMessageReceived("From " + senderAddress + ": " + message);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // Interface for receiving messages
+    public interface MessageListener {
+        void onMessageReceived(String message);
     }
 }
