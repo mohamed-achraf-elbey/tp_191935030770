@@ -102,17 +102,12 @@ public class Frame extends JFrame {
     }
 
     public int getPort() {
-        String portText = textFieldPort.getText().trim();  // Trim whitespace
-        try {
-            int port = Integer.parseInt(portText);
-            System.out.println("Parsed port: " + port);  // Debug statement
-            return port;
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid port number. Defaulting to 0.");
-            return 0; // Default or handle as appropriate
+        String portText = textFieldPort.getText();
+        if (portText.isEmpty()) {
+            return 12345; // Default port
         }
+        return Integer.parseInt(portText);
     }
-
 
     public String getReceiverIP() {
         return textFieldReceiverIP.getText();
@@ -122,13 +117,12 @@ public class Frame extends JFrame {
         return textFieldMessage.getText();
     }
 
+    public JButton getButtonSend() {
+        return btnSend;
+    }
+
     // Method to set received message on the label
     public void setReceivedMessage(String message) {
         labelReceivedMessage.setText(message);
-    }
-
-    // Getter for Send button
-    public JButton getButtonSend() {
-        return btnSend;
     }
 }
