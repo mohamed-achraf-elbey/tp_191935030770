@@ -16,17 +16,17 @@ public class Main {
             // Start server in a new thread
             new Thread(() -> {
                 int port = frameServer.getPort();
-                
-                // Check if the port is valid
+
                 if (port < 0) {
                     System.err.println("Invalid port specified for server.");
-                    return; // Exit if the port is invalid
+                    return;
                 }
 
                 UDPServer server = new UDPServer(port);
 
-                // Update GUI with received messages
+                // Set the server to update its frame with received messages
                 server.setMessageListener(message -> {
+                    // Update the received message on the server's frame
                     frameServer.setReceivedMessage(message);
                 });
 
@@ -34,35 +34,62 @@ public class Main {
             }).start();
 
             // Start client in a new thread
+         // Start client in a new thread
+         // Start client in a new thread
             new Thread(() -> {
                 frameClient.getButtonSend().addActionListener(e -> {
-                    // Retrieve inputs from the GUI
                     String senderIP = frameClient.getSenderIP();
                     String receiverIP = frameClient.getReceiverIP();
                     int port = frameClient.getPort();
                     String message = frameClient.getMessage();
 
-                    // Debugging: Print values to check if fields are filled correctly
                     System.out.println("Sender IP: " + senderIP);
                     System.out.println("Receiver IP: " + receiverIP);
                     System.out.println("Port: " + port);
                     System.out.println("Message: " + message);
 
-                    // Validate inputs before sending
                     if (senderIP.isEmpty() || receiverIP.isEmpty() || message.isEmpty()) {
                         System.err.println("Please fill all fields before sending.");
-                        return; // Exit if any field is invalid
+                        return;
                     }
 
-                    // Check if the port is valid
                     if (port < 0) {
                         System.err.println("Invalid port specified for client.");
-                        return; // Exit if the port is invalid
+                        return;
                     }
 
-                    // Initialize the client and send the message
-                    UDPClient client = new UDPClient(senderIP, receiverIP, port);
+                    // Initialize the client
+                    UDPClient client = new UDPClient(senderIP, receiverIP,frameServer.getPort(), 6000);
+
+                    // Set up the message listener to display received responses in the client UI
+                    client.setMessageListener(response -> {
+                        frameClient.setReceivedMessage(response);
+                    });
+
+                    // Start listening for incoming messages on the client
+                    client.startReceiving();
+
+                    // Send the initial message from the client to the server
                     client.sendMessage(message);
+                });
+            }).start();
+
+
+
+            // Start server-to-client response in another thread
+            new Thread(() -> {
+                frameServer.getButtonSend().addActionListener(e -> {
+                    String message = frameServer.getMessage();
+
+                    if (message.isEmpty()) {
+                        System.err.println("Message field is empty. Please type a message.");
+                        return;
+                    }
+
+                    // Send the server's response back to the client
+                    UDPServer server = new UDPServer(frameServer.getPort());
+                    server.sendMessage(message);
+                    System.out.println("Server message sent to client: " + message);
                 });
             }).start();
         });

@@ -104,7 +104,7 @@ public class Frame extends JFrame {
     public int getPort() {
         String portText = textFieldPort.getText();
         if (portText.isEmpty()) {
-            return 12345; // Default port
+            return 8888; // Default port
         }
         return Integer.parseInt(portText);
     }
@@ -124,5 +124,15 @@ public class Frame extends JFrame {
     // Method to set received message on the label
     public void setReceivedMessage(String message) {
         labelReceivedMessage.setText(message);
+    }
+
+    // Method to provide message listener interface for receiving messages
+    public MessageListener getMessageListener() {
+        return this::setReceivedMessage;
+    }
+
+    // Interface to allow receiving messages in real-time
+    public interface MessageListener {
+        void onMessageReceived(String message);
     }
 }
