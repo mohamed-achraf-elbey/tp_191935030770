@@ -6,63 +6,62 @@ public class Main {
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
-            // Initialize the Frame for client and server display
-            Frame frameClient = new Frame(200 , true);
-            frameClient.setVisible(true);
+            // Initialize the frames for both servers
+            Frame frameServer1 = new Frame(200, false);
+            frameServer1.setVisible(true);
 
-            Frame frameServer = new Frame(1000 , false);
-            frameServer.setVisible(true);
+            Frame frameServer2 = new Frame(1000, true);
+            frameServer2.setVisible(true);
 
-            // Set up the server instance with a specified port
-            int serverPort = 8888;
-            if (serverPort <= 0) {
-                System.err.println("Invalid port specified for server.");
+            // Set up two server instances with different ports
+            int serverPort1 = 8888;
+            int serverPort2 = 9999;
+
+            // Check for valid ports
+            if (serverPort1 <= 0 || serverPort2 <= 0) {
+                System.err.println("Invalid port specified for one of the servers.");
                 return;
-            }else {
-            	System.out.println("port server : "+serverPort);
+            } else {
+                System.out.println("Server 1 port: " + serverPort1);
+                System.out.println("Server 2 port: " + serverPort2);
             }
-            
-            // Create the UDPServer instance and start it in a new thread
-            UDPServer server = new UDPServer(serverPort);
-            server.setMessageListener(message -> {
-                // Update the received message on the server's frame
-                frameServer.appendReceivedMessage(message);
-            });
-            
-            new Thread(server::startServer).start(); // Start the server to listen for incoming messages
 
-            // Initialize the client once and start receiving messages
-            UDPClient client = new UDPClient(frameClient.getSenderIP().toString(), frameClient.getReceiverIP().toString(), serverPort, 6000);
-            
-            // Set message listener for client to update the client frame when a message is received
-            client.setMessageListener(message -> {
-                frameClient.appendReceivedMessage(message); // Append received message to client frame
+            // Create the first UDPServer instance and start it in a new thread
+            UDPServer server1 = new UDPServer(serverPort1);
+            server1.setMessageListener(message -> {
+                // Update the received message on the first server's frame
+                frameServer1.appendReceivedMessage(message);
             });
-            
-            client.startReceiving(); // Start listening for incoming messages
-            
-            // Client "Send" button functionality
-            frameClient.getButtonSend().addActionListener(e -> {
-                String message = frameClient.getMessage();
+            new Thread(server1::startServer).start(); // Start server 1
+
+            // Create the second UDPServer instance and start it in a new thread
+            UDPServer server2 = new UDPServer(serverPort2);
+            server2.setMessageListener(message -> {
+                // Update the received message on the second server's frame
+                frameServer2.appendReceivedMessage(message);
+            });
+            new Thread(server2::startServer).start(); // Start server 2
+
+            // Server 1 "Send" button functionality to send messages to Server 2
+            frameServer1.getButtonSend().addActionListener(e -> {
+                String message = frameServer1.getMessage();
                 if (message.isEmpty()) {
-                    System.err.println("Please fill in the message field before sending.");
+                    System.err.println("Please type a message in Server 1 frame before sending.");
                     return;
                 }
-                
-                // Send message from client to server
-                client.sendMessage(message);
+                // Server 1 sends a message to Server 2
+                server1.sendMessageTo(message, "localhost", serverPort2);
             });
 
-            // Server "Send" button functionality (to respond back to the client)
-            frameServer.getButtonSend().addActionListener(e -> {
-                String message = frameServer.getMessage();
+            // Server 2 "Send" button functionality to send messages to Server 1
+            frameServer2.getButtonSend().addActionListener(e -> {
+                String message = frameServer2.getMessage();
                 if (message.isEmpty()) {
-                    System.err.println("Message field is empty. Please type a message.");
+                    System.err.println("Please type a message in Server 2 frame before sending.");
                     return;
                 }
-
-                // Use the existing server instance to send a response back to the client
-                server.sendMessage(message);
+                // Server 2 sends a message to Server 1
+                server2.sendMessageTo(message, "localhost", serverPort1);
             });
         });
     }

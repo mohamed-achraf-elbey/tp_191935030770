@@ -5,6 +5,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.awt.event.ActionEvent;
 
 public class Frame extends JFrame {
@@ -136,17 +138,24 @@ public class Frame extends JFrame {
         localhost = new JButton("localhost");
         localhost.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (GG) {
-                    textFieldPort.setText("8888");
-                    textFieldSenderIP.setText("127.0.0.1");
-                    textFieldReceiverIP.setText("127.0.0.1");
-                } else {
-                    textFieldPort.setText("6000");
-                    textFieldSenderIP.setText("127.0.0.1");
-                    textFieldReceiverIP.setText("127.0.0.1");
+                try {
+                    InetAddress localHost = InetAddress.getLocalHost();
+                    String localIp = localHost.getHostAddress();
+                    if (GG) {
+                        textFieldPort.setText("8888");
+                        textFieldSenderIP.setText(localIp);
+                        textFieldReceiverIP.setText(localIp);
+                    } else {
+                        textFieldPort.setText("8888");
+                        textFieldSenderIP.setText(localIp);
+                        textFieldReceiverIP.setText(localIp);
+                    }
+                } catch (UnknownHostException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
+
         localhost.setBounds(630, 49, 85, 21);
         panel.add(localhost);
     }
