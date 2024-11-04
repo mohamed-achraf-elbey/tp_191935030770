@@ -1,14 +1,11 @@
 package pk;
 
 import java.awt.Color;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
 import java.awt.Font;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class Frame extends JFrame {
 
@@ -18,10 +15,13 @@ public class Frame extends JFrame {
     private JTextField textFieldPort;
     private JTextField textFieldReceiverIP;
     private JTextField textFieldMessage;
-    private JLabel labelReceivedMessage;
+    private JTextArea labelReceivedMessage;
+    private JScrollPane scrollPane;
     private JButton btnSend;
-
-    public Frame(int position) {
+    private JButton localhost;
+    public boolean GG ;
+    public Frame(int position , boolean SC ) {
+    	GG = SC ;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(position, 200, 800, 690);
         contentPane = new JPanel();
@@ -74,7 +74,7 @@ public class Frame extends JFrame {
         textFieldPort.setHorizontalAlignment(SwingConstants.CENTER);
         textFieldPort.setBounds(203, 119, 198, 29);
         panel.add(textFieldPort);
-
+        
         textFieldReceiverIP = new JTextField();
         textFieldReceiverIP.setHorizontalAlignment(SwingConstants.CENTER);
         textFieldReceiverIP.setBounds(203, 209, 198, 29);
@@ -85,15 +85,40 @@ public class Frame extends JFrame {
         textFieldMessage.setBounds(203, 277, 198, 29);
         panel.add(textFieldMessage);
 
-        labelReceivedMessage = new JLabel("");
+        labelReceivedMessage = new JTextArea();
         labelReceivedMessage.setForeground(Color.WHITE);
+        labelReceivedMessage.setBackground(Color.BLACK);
         labelReceivedMessage.setFont(new Font("Sylfaen", Font.BOLD | Font.ITALIC, 15));
-        labelReceivedMessage.setBounds(215, 456, 500, 80);
-        panel.add(labelReceivedMessage);
+        labelReceivedMessage.setEditable(false); // منع التعديل على الرسائل المستقبلة
+
+        // وضع JTextArea في JScrollPane
+        scrollPane = new JScrollPane(labelReceivedMessage);
+        scrollPane.setBounds(215, 456, 500, 80);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        panel.add(scrollPane);
 
         btnSend = new JButton("Send");
+        btnSend.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		textFieldMessage.setText("");
+        	}
+        });
         btnSend.setBounds(163, 360, 85, 21);
         panel.add(btnSend);
+        
+        localhost = new JButton("localhost");
+        localhost.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if(GG) { textFieldPort.setText("8888");
+        		textFieldSenderIP.setText("127.0.0.1");
+        		textFieldReceiverIP.setText("127.0.0.1");
+        		}else { textFieldPort.setText("6000");
+        		textFieldSenderIP.setText("127.0.0.1");
+        		textFieldReceiverIP.setText("127.0.0.1");}
+        	}
+        });
+        localhost.setBounds(630, 49, 85, 21);
+        panel.add(localhost);
     }
 
     // Getter methods for text fields
@@ -105,6 +130,7 @@ public class Frame extends JFrame {
         String portText = textFieldPort.getText();
         if (portText.isEmpty()) {
             return 8888; // Default port
+            
         }
         return Integer.parseInt(portText);
     }
@@ -121,14 +147,14 @@ public class Frame extends JFrame {
         return btnSend;
     }
 
-    // Method to set received message on the label
-    public void setReceivedMessage(String message) {
-        labelReceivedMessage.setText(message);
+    // Method to add a new received message to the label
+    public void appendReceivedMessage(String message) {
+        labelReceivedMessage.append(message + "\n");
     }
 
     // Method to provide message listener interface for receiving messages
     public MessageListener getMessageListener() {
-        return this::setReceivedMessage;
+        return this::appendReceivedMessage;
     }
 
     // Interface to allow receiving messages in real-time

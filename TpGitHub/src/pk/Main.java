@@ -7,10 +7,10 @@ public class Main {
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             // Initialize the Frame for client and server display
-            Frame frameClient = new Frame(200);
+            Frame frameClient = new Frame(200 , true);
             frameClient.setVisible(true);
 
-            Frame frameServer = new Frame(1000);
+            Frame frameServer = new Frame(1000 , false);
             frameServer.setVisible(true);
 
             // Set up the server instance with a specified port
@@ -24,31 +24,31 @@ public class Main {
             UDPServer server = new UDPServer(serverPort);
             server.setMessageListener(message -> {
                 // Update the received message on the server's frame
-                frameServer.setReceivedMessage(message);
+                frameServer.appendReceivedMessage(message);
             });
             
             new Thread(server::startServer).start(); // Start the server to listen for incoming messages
 
+            // Initialize the client once and start receiving messages
+            UDPClient client = new UDPClient("127.0.0.1", "127.0.0.1", serverPort, 6000);
+            
+            // Set message listener for client to update the client frame when a message is received
+            client.setMessageListener(message -> {
+                frameClient.appendReceivedMessage(message); // Append received message to client frame
+            });
+            
+            client.startReceiving(); // Start listening for incoming messages
+            
             // Client "Send" button functionality
             frameClient.getButtonSend().addActionListener(e -> {
-                String senderIP = frameClient.getSenderIP();
-                String receiverIP = frameClient.getReceiverIP();
-                int port = frameClient.getPort();
                 String message = frameClient.getMessage();
-
-                if (senderIP.isEmpty() || receiverIP.isEmpty() || message.isEmpty()) {
-                    System.err.println("Please fill all fields before sending.");
+                if (message.isEmpty()) {
+                    System.err.println("Please fill in the message field before sending.");
                     return;
                 }
-
-                // Initialize and set up the client
-                UDPClient client = new UDPClient(senderIP, receiverIP, serverPort, 6000);
-                client.setMessageListener(response -> {
-                    frameClient.setReceivedMessage(response); // Display server response on client UI
-                });
                 
-                client.startReceiving(); // Start client thread to listen for responses
-                client.sendMessage(message); // Send initial message from client to server
+                // Send message from client to server
+                client.sendMessage(message);
             });
 
             // Server "Send" button functionality (to respond back to the client)

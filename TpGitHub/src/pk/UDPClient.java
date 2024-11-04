@@ -1,8 +1,10 @@
 package pk;
 
+import java.awt.Desktop;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.URI;
 
 public class UDPClient {
 
@@ -40,6 +42,11 @@ public class UDPClient {
 
             clientSocket.send(sendPacket); // Send using pre-bound socket
             System.out.println("Message sent from " + senderIP + " to " + receiverIP + ":" + serverPort);
+
+            // Check if the message is a URL and open it in the browser
+            if (isValidURL(message)) {
+                openWebpage(message);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -65,6 +72,21 @@ public class UDPClient {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    // Method to validate if a string is a valid URL
+    private boolean isValidURL(String message) {
+        // Simple check to see if the message starts with "http://" or "https://"
+        return message.startsWith("www.") || message.startsWith("https://");
+    }
+
+    // Method to open a URL in the default web browser
+    private void openWebpage(String url) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // Interface for receiving messages
