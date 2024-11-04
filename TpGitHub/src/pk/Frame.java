@@ -19,9 +19,12 @@ public class Frame extends JFrame {
     private JScrollPane scrollPane;
     private JButton btnSend;
     private JButton localhost;
-    public boolean GG ;
-    public Frame(int position , boolean SC ) {
-    	GG = SC ;
+    public boolean GG;
+
+    @SuppressWarnings("deprecation")
+	public Frame(int position, boolean SC) {
+    	
+        GG = SC;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(position, 200, 800, 690);
         contentPane = new JPanel();
@@ -35,6 +38,21 @@ public class Frame extends JFrame {
         contentPane.add(panel);
         panel.setLayout(null);
 
+        // Adding labels
+        addLabels(panel);
+
+        // Adding text fields
+        addTextFields(panel);
+
+        // Adding buttons
+        addButtons(panel);
+
+        // Initial state of components
+        setComponentsState(true);
+        
+    }
+
+    private void addLabels(JPanel panel) {
         JLabel text1 = new JLabel("IP Address Sender");
         text1.setForeground(Color.WHITE);
         text1.setFont(new Font("Sylfaen", Font.BOLD | Font.ITALIC, 15));
@@ -64,17 +82,20 @@ public class Frame extends JFrame {
         text1_5.setFont(new Font("Sylfaen", Font.BOLD | Font.ITALIC, 15));
         text1_5.setBounds(37, 443, 170, 42);
         panel.add(text1_5);
+    }
 
+    private void addTextFields(JPanel panel) {
         textFieldSenderIP = new JTextField();
         textFieldSenderIP.setHorizontalAlignment(SwingConstants.CENTER);
         textFieldSenderIP.setBounds(203, 49, 198, 29);
         panel.add(textFieldSenderIP);
 
         textFieldPort = new JTextField();
+        textFieldPort.setEditable(false);
         textFieldPort.setHorizontalAlignment(SwingConstants.CENTER);
         textFieldPort.setBounds(203, 119, 198, 29);
         panel.add(textFieldPort);
-        
+
         textFieldReceiverIP = new JTextField();
         textFieldReceiverIP.setHorizontalAlignment(SwingConstants.CENTER);
         textFieldReceiverIP.setBounds(203, 209, 198, 29);
@@ -96,26 +117,35 @@ public class Frame extends JFrame {
         scrollPane.setBounds(215, 456, 500, 80);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         panel.add(scrollPane);
+    }
 
+    private void addButtons(JPanel panel) {
         btnSend = new JButton("Send");
         btnSend.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		textFieldMessage.setText("");
-        	}
+            public void actionPerformed(ActionEvent e) {
+                if (validateInputs()) {
+                    // Input is valid, send the message
+                    textFieldMessage.setText("");
+                    // Additional logic for sending message can be added here
+                }
+            }
         });
         btnSend.setBounds(163, 360, 85, 21);
         panel.add(btnSend);
-        
+
         localhost = new JButton("localhost");
         localhost.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		if(GG) { textFieldPort.setText("8888");
-        		textFieldSenderIP.setText("127.0.0.1");
-        		textFieldReceiverIP.setText("127.0.0.1");
-        		}else { textFieldPort.setText("6000");
-        		textFieldSenderIP.setText("127.0.0.1");
-        		textFieldReceiverIP.setText("127.0.0.1");}
-        	}
+            public void actionPerformed(ActionEvent e) {
+                if (GG) {
+                    textFieldPort.setText("8888");
+                    textFieldSenderIP.setText("127.0.0.1");
+                    textFieldReceiverIP.setText("127.0.0.1");
+                } else {
+                    textFieldPort.setText("6000");
+                    textFieldSenderIP.setText("127.0.0.1");
+                    textFieldReceiverIP.setText("127.0.0.1");
+                }
+            }
         });
         localhost.setBounds(630, 49, 85, 21);
         panel.add(localhost);
@@ -126,14 +156,7 @@ public class Frame extends JFrame {
         return textFieldSenderIP.getText();
     }
 
-    public int getPort() {
-        String portText = textFieldPort.getText();
-        if (portText.isEmpty()) {
-            return 8888; // Default port
-            
-        }
-        return Integer.parseInt(portText);
-    }
+    
 
     public String getReceiverIP() {
         return textFieldReceiverIP.getText();
@@ -155,6 +178,67 @@ public class Frame extends JFrame {
     // Method to provide message listener interface for receiving messages
     public MessageListener getMessageListener() {
         return this::appendReceivedMessage;
+    }
+
+    // Validation for input fields
+    private boolean validateInputs() {
+        String senderIP = getSenderIP();
+        String receiverIP = getReceiverIP();
+        String portText = textFieldPort.getText();
+        String message = getMessage();
+
+        if (senderIP.isEmpty() || receiverIP.isEmpty() || portText.isEmpty() || message.isEmpty()) {
+            showErrorDialog("All fields must be filled.");
+            return false;
+        }
+
+        if (!isValidIPAddress(senderIP)) {
+            showErrorDialog("Invalid sender IP address.");
+            return false;
+        }
+
+        if (!isValidIPAddress(receiverIP)) {
+            showErrorDialog("Invalid receiver IP address.");
+            return false;
+        }
+
+        int port;
+        try {
+            port = Integer.parseInt(portText);
+            if (port < 0 || port > 65535) {
+                showErrorDialog("Port number must be between 0 and 65535.");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            showErrorDialog("Port must be a valid number.");
+            return false;
+        }
+
+        return true; // All inputs are valid
+    }
+
+    // Method to check if the IP address is valid
+    private boolean isValidIPAddress(String ip) {
+        String ipPattern = 
+            "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." + 
+            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." + 
+            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." + 
+            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
+        return ip.matches(ipPattern);
+    }
+
+    // Method to display an error dialog
+    private void showErrorDialog(String message) {
+        JOptionPane.showMessageDialog(this, message, "Input Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // Method to enable or disable components
+    private void setComponentsState(boolean enabled) {
+        textFieldSenderIP.setEnabled(enabled);
+        textFieldReceiverIP.setEnabled(enabled);
+        textFieldMessage.setEnabled(enabled);
+        btnSend.setEnabled(enabled);
+        localhost.setEnabled(enabled);
     }
 
     // Interface to allow receiving messages in real-time
