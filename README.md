@@ -37,7 +37,7 @@ This project implements a simple UDP messaging application with a graphical user
 
 ### Prerequisites
 - Java Development Kit (JDK) installed on your machine.
-- An IDE such as IntelliJ IDEA or Eclipse (optional but recommended).
+- An IDE such as IntelliJ IDEA or Eclipse .
 
 ### Installation
 1. Clone the repository:
