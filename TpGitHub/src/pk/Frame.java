@@ -44,13 +44,10 @@ public class Frame extends JFrame {
         contentPane.add(panel);
         panel.setLayout(null);
 
-        // Adding labels
         addLabels(panel);
 
-        // Adding text fields
         addTextFields(panel);
 
-        // Adding buttons
         addButtons(panel);
         
         text1_4 = new JLabel("server listening on port "+serverPort);
@@ -59,7 +56,6 @@ public class Frame extends JFrame {
         text1_4.setBounds(272, 10, 295, 29);
         panel.add(text1_4);
 
-        // Initial state of components
         setComponentsState(true);
         
     }
@@ -125,9 +121,8 @@ public class Frame extends JFrame {
         labelReceivedMessage.setForeground(Color.WHITE);
         labelReceivedMessage.setBackground(Color.BLACK);
         labelReceivedMessage.setFont(new Font("Tahoma", Font.BOLD, 15));
-        labelReceivedMessage.setEditable(false); // منع التعديل على الرسائل المستقبلة
+        labelReceivedMessage.setEditable(false); 
 
-        // وضع JTextArea في JScrollPane
         scrollPane = new JScrollPane(labelReceivedMessage);
         scrollPane.setBounds(215, 456, 500, 80);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -139,9 +134,7 @@ public class Frame extends JFrame {
         btnSend.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (validateInputs()) {
-                    // Input is valid, send the message
                     textFieldMessage.setText("");
-                    // Additional logic for sending message can be added here
                 }
             }
         });
@@ -173,7 +166,6 @@ public class Frame extends JFrame {
         panel.add(localhost);
     }
 
-    // Getter methods for text fields
     public String getSenderIP() {
         return textFieldSenderIP.getText();
     }
@@ -192,17 +184,14 @@ public class Frame extends JFrame {
         return btnSend;
     }
 
-    // Method to add a new received message to the label
     public void appendReceivedMessage(String message) {
         labelReceivedMessage.append(message + "\n");
     }
 
-    // Method to provide message listener interface for receiving messages
     public MessageListener getMessageListener() {
         return this::appendReceivedMessage;
     }
 
-    // Validation for input fields
     private boolean validateInputs() {
         String senderIP = getSenderIP();
         String receiverIP = getReceiverIP();
@@ -245,10 +234,9 @@ public class Frame extends JFrame {
             return false;
         }
 
-        return true; // All inputs are valid
+        return true; 
     }
 
-    // Method to check if the IP address is valid
     private boolean isValidIPAddress(String ip) {
         String ipPattern = 
             "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." + 
@@ -258,12 +246,10 @@ public class Frame extends JFrame {
         return ip.matches(ipPattern);
     }
 
-    // Method to display an error dialog
     private void showErrorDialog(String message) {
         JOptionPane.showMessageDialog(this, message, "Input Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    // Method to enable or disable components
     private void setComponentsState(boolean enabled) {
         textFieldSenderIP.setEnabled(enabled);
         textFieldReceiverIP.setEnabled(enabled);
@@ -272,7 +258,6 @@ public class Frame extends JFrame {
         localhost.setEnabled(enabled);
     }
 
-    // Interface to allow receiving messages in real-time
     public interface MessageListener {
         void onMessageReceived(String message);
     }

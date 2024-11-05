@@ -11,7 +11,6 @@ public class Main {
         EventQueue.invokeLater(() -> {
       
             
-            // Initialize the frames for both servers
             Frame frameServer1 = new Frame(200, false , serverPort1 , serverPort2 );
             frameServer1.setVisible(true);
 
@@ -23,7 +22,7 @@ public class Main {
             if (serverPort1 <= 0) {
                 JOptionPane.showMessageDialog(null, "Invalid port specified for Server 1.", "Port Error", JOptionPane.ERROR_MESSAGE);
                 frameServer1.dispose();
-                frameServer2.dispose(); // Close both frames
+                frameServer2.dispose(); 
                 return;
             } else {
                 System.out.println("Server 1 port: " + serverPort1);
@@ -32,24 +31,22 @@ public class Main {
             if (serverPort2 <= 0) {
                 JOptionPane.showMessageDialog(null, "Invalid port specified for Server 2.", "Port Error", JOptionPane.ERROR_MESSAGE);
                 frameServer1.dispose();
-                frameServer2.dispose(); // Close both frames
+                frameServer2.dispose(); 
                 return;
             } else {
                 System.out.println("Server 2 port: " + serverPort2);
             }
 
-            // Check if ports are available
             if (!isPortAvailable(serverPort1)) {
                 JOptionPane.showMessageDialog(null, "Port  " + serverPort1 + "  and  "+ serverPort2 + "  is already in use. Cannot start Server 1 and Server 2 .", "Port Error", JOptionPane.ERROR_MESSAGE);
                 frameServer1.dispose(); 
-                frameServer2.dispose(); // Close both frames if Server 1 port is unavailable
-                return;
+                frameServer2.dispose(); 
             }
 
             if (!isPortAvailable(serverPort2)) {
                 JOptionPane.showMessageDialog(null, "Port " + serverPort2 + " is already in use. Cannot start Server 2.", "Port Error", JOptionPane.ERROR_MESSAGE);
                 frameServer1.dispose();
-                frameServer2.dispose(); // Close both frames if Server 2 port is unavailable
+                frameServer2.dispose();
                 return;
             }
 
@@ -57,13 +54,13 @@ public class Main {
             server1.setMessageListener(message -> {
                 frameServer1.appendReceivedMessage(message);
             });
-            new Thread(server1::startServer).start(); // Start server 1
+            new Thread(server1::startServer).start(); 
 
             UDPServer server2 = new UDPServer(serverPort2);
             server2.setMessageListener(message -> {
                 frameServer2.appendReceivedMessage(message);
             });
-            new Thread(server2::startServer).start(); // Start server 2
+            new Thread(server2::startServer).start(); 
 
             frameServer1.getButtonSend().addActionListener(e -> {
                 String message = frameServer1.getMessage();
@@ -74,7 +71,6 @@ public class Main {
                 server1.sendMessageTo(message, "localhost", frameServer1.getServerPort());
             });
 
-            // Server 2 "Send" button functionality to send messages to Server 1
             frameServer2.getButtonSend().addActionListener(e -> {
                 String message = frameServer2.getMessage();
                 if (message.isEmpty()) {

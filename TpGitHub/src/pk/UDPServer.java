@@ -33,8 +33,8 @@ public class UDPServer {
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
 
-                clientAddress = receivePacket.getAddress(); // Capture client's address
-                clientPort = receivePacket.getPort();       // Capture client's port
+                clientAddress = receivePacket.getAddress(); 
+                clientPort = receivePacket.getPort();      
 
                 String message = new String(receivePacket.getData(), 0, receivePacket.getLength());
                 System.out.println("Received message: " + message + " from " + clientAddress + ":" + clientPort);
@@ -92,7 +92,6 @@ public class UDPServer {
     }
     
     private boolean isValidURL(String message) {
-        // Simple check to see if the message starts with "http://" or "https://"
         return message.startsWith("www.") || message.startsWith("https://");
     }
 }

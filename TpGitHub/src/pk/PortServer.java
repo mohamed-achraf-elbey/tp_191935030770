@@ -88,11 +88,9 @@ public class PortServer extends JFrame {
             return;
         }
 
-        // If ports are available, you can create an instance of Main
         System.out.println("Starting servers...");        
-        // Create an instance of Main
         Main mainInstance = new Main();
-        mainInstance.startServers(serverPort1, serverPort2);// Assuming there's a method to start the servers
+        mainInstance.startServers(serverPort1, serverPort2);
     }
 
     private boolean isPortAvailable(int port) {
