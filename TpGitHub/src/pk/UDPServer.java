@@ -50,7 +50,7 @@ public class UDPServer {
         }
     }
 
-    public void sendMessage(String message) {
+    /* public void sendMessage(String message) {
         sendMessageToClient(message);
     }
 
@@ -67,7 +67,7 @@ public class UDPServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
     public void sendMessageTo(String message, String ipAddress, int port) {
         try {
             InetAddress address = InetAddress.getByName(ipAddress);

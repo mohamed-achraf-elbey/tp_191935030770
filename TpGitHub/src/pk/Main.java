@@ -1,56 +1,77 @@
 package pk;
 
 import java.awt.EventQueue;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+import javax.swing.JOptionPane;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public void startServers( int serverPort1 , int serverPort2 ) {
         EventQueue.invokeLater(() -> {
+      
+            
             // Initialize the frames for both servers
-            Frame frameServer1 = new Frame(200, false);
+            Frame frameServer1 = new Frame(200, false , serverPort1 , serverPort2 );
             frameServer1.setVisible(true);
 
-            Frame frameServer2 = new Frame(1000, true);
+            Frame frameServer2 = new Frame(1000, true , serverPort2 , serverPort1);
             frameServer2.setVisible(true);
 
-            // Set up two server instances with different ports
-            int serverPort1 = 8888;
-            int serverPort2 = 9999;
+            
 
-            // Check for valid ports
-            if (serverPort1 <= 0 || serverPort2 <= 0) {
-                System.err.println("Invalid port specified for one of the servers.");
+            if (serverPort1 <= 0) {
+                JOptionPane.showMessageDialog(null, "Invalid port specified for Server 1.", "Port Error", JOptionPane.ERROR_MESSAGE);
+                frameServer1.dispose();
+                frameServer2.dispose(); // Close both frames
                 return;
             } else {
                 System.out.println("Server 1 port: " + serverPort1);
+            }
+
+            if (serverPort2 <= 0) {
+                JOptionPane.showMessageDialog(null, "Invalid port specified for Server 2.", "Port Error", JOptionPane.ERROR_MESSAGE);
+                frameServer1.dispose();
+                frameServer2.dispose(); // Close both frames
+                return;
+            } else {
                 System.out.println("Server 2 port: " + serverPort2);
             }
 
-            // Create the first UDPServer instance and start it in a new thread
+            // Check if ports are available
+            if (!isPortAvailable(serverPort1)) {
+                JOptionPane.showMessageDialog(null, "Port  " + serverPort1 + "  and  "+ serverPort2 + "  is already in use. Cannot start Server 1 and Server 2 .", "Port Error", JOptionPane.ERROR_MESSAGE);
+                frameServer1.dispose(); 
+                frameServer2.dispose(); // Close both frames if Server 1 port is unavailable
+                return;
+            }
+
+            if (!isPortAvailable(serverPort2)) {
+                JOptionPane.showMessageDialog(null, "Port " + serverPort2 + " is already in use. Cannot start Server 2.", "Port Error", JOptionPane.ERROR_MESSAGE);
+                frameServer1.dispose();
+                frameServer2.dispose(); // Close both frames if Server 2 port is unavailable
+                return;
+            }
+
             UDPServer server1 = new UDPServer(serverPort1);
             server1.setMessageListener(message -> {
-                // Update the received message on the first server's frame
                 frameServer1.appendReceivedMessage(message);
             });
             new Thread(server1::startServer).start(); // Start server 1
 
-            // Create the second UDPServer instance and start it in a new thread
             UDPServer server2 = new UDPServer(serverPort2);
             server2.setMessageListener(message -> {
-                // Update the received message on the second server's frame
                 frameServer2.appendReceivedMessage(message);
             });
             new Thread(server2::startServer).start(); // Start server 2
 
-            // Server 1 "Send" button functionality to send messages to Server 2
             frameServer1.getButtonSend().addActionListener(e -> {
                 String message = frameServer1.getMessage();
                 if (message.isEmpty()) {
                     System.err.println("Please type a message in Server 1 frame before sending.");
                     return;
                 }
-                // Server 1 sends a message to Server 2
-                server1.sendMessageTo(message, "localhost", serverPort2);
+                server1.sendMessageTo(message, "localhost", frameServer1.getServerPort());
             });
 
             // Server 2 "Send" button functionality to send messages to Server 1
@@ -60,9 +81,16 @@ public class Main {
                     System.err.println("Please type a message in Server 2 frame before sending.");
                     return;
                 }
-                // Server 2 sends a message to Server 1
-                server2.sendMessageTo(message, "localhost", serverPort1);
+                server2.sendMessageTo(message, "localhost", frameServer2.getServerPort());
             });
         });
+    }
+
+    private static boolean isPortAvailable(int port) {
+        try (DatagramSocket socket = new DatagramSocket(port)) {
+            return true;
+        } catch (SocketException e) {
+            return false;
+        }
     }
 }

@@ -22,13 +22,17 @@ public class Frame extends JFrame {
     private JButton btnSend;
     private JButton localhost;
     public boolean GG;
-
+    public int serverPort ; 
+    public int portServerReciver ;
+    private JLabel text1_4;
     @SuppressWarnings("deprecation")
-	public Frame(int position, boolean SC) {
+	public Frame(int position, boolean SC , int serverPort , int portServerReciver) {
     	
         GG = SC;
+        this.serverPort = serverPort;
+        this.portServerReciver = portServerReciver ;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(position, 200, 800, 690);
+        setBounds(position, 200, 800, 620);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
@@ -48,6 +52,12 @@ public class Frame extends JFrame {
 
         // Adding buttons
         addButtons(panel);
+        
+        text1_4 = new JLabel("server listening on port "+serverPort);
+        text1_4.setForeground(new Color(255, 0, 0));
+        text1_4.setFont(new Font("Sylfaen", Font.BOLD | Font.ITALIC, 15));
+        text1_4.setBounds(272, 10, 295, 29);
+        panel.add(text1_4);
 
         // Initial state of components
         setComponentsState(true);
@@ -70,7 +80,7 @@ public class Frame extends JFrame {
         JLabel text1_2 = new JLabel("IP Address Receiver");
         text1_2.setForeground(Color.WHITE);
         text1_2.setFont(new Font("Sylfaen", Font.BOLD | Font.ITALIC, 15));
-        text1_2.setBounds(37, 204, 170, 42);
+        text1_2.setBounds(37, 189, 170, 42);
         panel.add(text1_2);
 
         JLabel text1_3 = new JLabel("Message to Send");
@@ -88,30 +98,33 @@ public class Frame extends JFrame {
 
     private void addTextFields(JPanel panel) {
         textFieldSenderIP = new JTextField();
+        textFieldSenderIP.setFont(new Font("Tahoma", Font.BOLD, 14));
         textFieldSenderIP.setHorizontalAlignment(SwingConstants.CENTER);
         textFieldSenderIP.setBounds(203, 49, 198, 29);
         panel.add(textFieldSenderIP);
 
         textFieldPort = new JTextField();
-        textFieldPort.setEditable(false);
+        textFieldPort.setFont(new Font("Tahoma", Font.BOLD, 14));
         textFieldPort.setHorizontalAlignment(SwingConstants.CENTER);
         textFieldPort.setBounds(203, 119, 198, 29);
         panel.add(textFieldPort);
 
         textFieldReceiverIP = new JTextField();
+        textFieldReceiverIP.setFont(new Font("Tahoma", Font.BOLD, 14));
         textFieldReceiverIP.setHorizontalAlignment(SwingConstants.CENTER);
-        textFieldReceiverIP.setBounds(203, 209, 198, 29);
+        textFieldReceiverIP.setBounds(203, 194, 198, 29);
         panel.add(textFieldReceiverIP);
 
         textFieldMessage = new JTextField();
+        textFieldMessage.setFont(new Font("Tahoma", Font.BOLD, 14));
         textFieldMessage.setHorizontalAlignment(SwingConstants.CENTER);
-        textFieldMessage.setBounds(203, 277, 198, 29);
+        textFieldMessage.setBounds(203, 263, 476, 68);
         panel.add(textFieldMessage);
 
         labelReceivedMessage = new JTextArea();
         labelReceivedMessage.setForeground(Color.WHITE);
         labelReceivedMessage.setBackground(Color.BLACK);
-        labelReceivedMessage.setFont(new Font("Sylfaen", Font.BOLD | Font.ITALIC, 15));
+        labelReceivedMessage.setFont(new Font("Tahoma", Font.BOLD, 15));
         labelReceivedMessage.setEditable(false); // منع التعديل على الرسائل المستقبلة
 
         // وضع JTextArea في JScrollPane
@@ -132,7 +145,7 @@ public class Frame extends JFrame {
                 }
             }
         });
-        btnSend.setBounds(163, 360, 85, 21);
+        btnSend.setBounds(163, 360, 100, 30);
         panel.add(btnSend);
 
         localhost = new JButton("localhost");
@@ -142,11 +155,11 @@ public class Frame extends JFrame {
                     InetAddress localHost = InetAddress.getLocalHost();
                     String localIp = localHost.getHostAddress();
                     if (GG) {
-                        textFieldPort.setText("8888");
+                        textFieldPort.setText(""+portServerReciver);
                         textFieldSenderIP.setText(localIp);
                         textFieldReceiverIP.setText(localIp);
                     } else {
-                        textFieldPort.setText("8888");
+                        textFieldPort.setText(""+portServerReciver);
                         textFieldSenderIP.setText(localIp);
                         textFieldReceiverIP.setText(localIp);
                     }
@@ -156,7 +169,7 @@ public class Frame extends JFrame {
             }
         });
 
-        localhost.setBounds(630, 49, 85, 21);
+        localhost.setBounds(651, 27, 100, 30);
         panel.add(localhost);
     }
 
@@ -196,8 +209,17 @@ public class Frame extends JFrame {
         String portText = textFieldPort.getText();
         String message = getMessage();
 
-        if (senderIP.isEmpty() || receiverIP.isEmpty() || portText.isEmpty() || message.isEmpty()) {
+        if (senderIP.isEmpty() || receiverIP.isEmpty() || portText.isEmpty() ) {
             showErrorDialog("All fields must be filled.");
+            return false;
+        }
+        if(message.isEmpty()&& GG) {
+        	showErrorDialog("Please type a message in Server 1");
+            return false;
+        }
+        
+        if(message.isEmpty()&& !GG) {
+        	showErrorDialog("Please type a message in Server 2");
             return false;
         }
 
@@ -254,4 +276,11 @@ public class Frame extends JFrame {
     public interface MessageListener {
         void onMessageReceived(String message);
     }
+
+
+	public int getServerPort() {
+		return Integer.parseInt(textFieldPort.getText());
+	}
+    
+    
 }
