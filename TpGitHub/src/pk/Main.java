@@ -68,7 +68,7 @@ public class Main {
                     System.err.println("Please type a message in Server 1 frame before sending.");
                     return;
                 }
-                server1.sendMessageTo(message, "localhost", frameServer1.getServerPort());
+                server1.sendMessageTo(message, frameServer1.getReceiverIP(), frameServer1.getServerPort());
             });
 
             frameServer2.getButtonSend().addActionListener(e -> {
@@ -77,7 +77,7 @@ public class Main {
                     System.err.println("Please type a message in Server 2 frame before sending.");
                     return;
                 }
-                server2.sendMessageTo(message, "localhost", frameServer2.getServerPort());
+                server2.sendMessageTo(message, frameServer2.getReceiverIP(), frameServer2.getServerPort());
             });
         });
     }
