@@ -6,9 +6,6 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.SocketException;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
@@ -87,13 +84,13 @@ public class Main {
         });
     }
     // if port using return fulse else returrn true
-    private static boolean isPortAvailable(int port) {
+    /*private static boolean isPortAvailable(int port) {
         try (DatagramSocket socket = new DatagramSocket(port)) {
             return true;
         } catch (SocketException e) {
             return false;
         }
-    }
+    }*/
     //take screen shot if send msg 
     private void takeScreenshot(String receiverIP) {
         try {
