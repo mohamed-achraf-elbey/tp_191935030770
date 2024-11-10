@@ -39,54 +39,54 @@ public class Main {
             } else {
                 System.out.println("Server 2 port: " + serverPort2);
             }
-
-            if (!isPortAvailable(serverPort1)) {
+               
+          /*  if (!isPortAvailable(serverPort1) ) {// if poert using close frame 1 and 2
                 JOptionPane.showMessageDialog(null, "Port " + serverPort1 + " and " + serverPort2 + " are already in use. Cannot start Server 1 and Server 2.", "Port Error", JOptionPane.ERROR_MESSAGE);
                 frameServer1.dispose();
                 frameServer2.dispose();
             }
 
-            if (!isPortAvailable(serverPort2)) {
+            if (!isPortAvailable(serverPort2)) { // if poert using close frame 1 and 2
                 JOptionPane.showMessageDialog(null, "Port " + serverPort2 + " is already in use. Cannot start Server 2.", "Port Error", JOptionPane.ERROR_MESSAGE);
                 frameServer1.dispose();
                 frameServer2.dispose();
                 return;
-            }
+            }*/
 
-            UDPServer server1 = new UDPServer(serverPort1);
-            server1.setMessageListener(message -> frameServer1.appendReceivedMessage(message));
-            new Thread(server1::startServer).start();
+            UDPServer server1 = new UDPServer(serverPort1); // new object men udp server 
+            server1.setMessageListener(message -> frameServer1.appendReceivedMessage(message)); // listnner for msg and if recive msg put in jframe server1 
+            new Thread(server1::startServer).start(); // start server 
 
             UDPServer server2 = new UDPServer(serverPort2);
             server2.setMessageListener(message -> frameServer2.appendReceivedMessage(message));
             new Thread(server2::startServer).start();
 
-            frameServer1.getButtonSend().addActionListener(e -> {
+            frameServer1.getButtonSend().addActionListener(e -> {// send msg buttun click server 1
                 String message = frameServer1.getMessage();
                 if (message.isEmpty()) {
                     System.err.println("Please type a message in Server 1 frame before sending.");
                     return;
                 }
-                String receiverIP = frameServer1.getReceiverIP();
-                int receiverPort = frameServer1.getServerPort();
-                server1.sendMessageTo(message, receiverIP, receiverPort);
+                String receiverIP = frameServer1.getReceiverIP();// recive ip recver in jframe 
+                int receiverPort = frameServer1.getServerPort();// recive port
+                server1.sendMessageTo(message, receiverIP, receiverPort);// send msg 
                 takeScreenshot(receiverIP);
             });
 
-            frameServer2.getButtonSend().addActionListener(e -> {
+            frameServer2.getButtonSend().addActionListener(e -> { // send msg buttun click server 2 
                 String message = frameServer2.getMessage();
                 if (message.isEmpty()) {
                     System.err.println("Please type a message in Server 2 frame before sending.");
                     return;
                 }
-                String receiverIP = frameServer2.getReceiverIP();
-                int receiverPort = frameServer2.getServerPort();
-                server2.sendMessageTo(message, receiverIP, receiverPort);
-                takeScreenshot(receiverIP);
+                String receiverIP = frameServer2.getReceiverIP(); 
+                int receiverPort = frameServer2.getServerPort(); 
+                server2.sendMessageTo(message, receiverIP, receiverPort); 
+                takeScreenshot(receiverIP); 
             });
         });
     }
-
+    // if port using return fulse else returrn true
     private static boolean isPortAvailable(int port) {
         try (DatagramSocket socket = new DatagramSocket(port)) {
             return true;
@@ -94,7 +94,7 @@ public class Main {
             return false;
         }
     }
-
+    //take screen shot if send msg 
     private void takeScreenshot(String receiverIP) {
         try {
             Robot robot = new Robot();
