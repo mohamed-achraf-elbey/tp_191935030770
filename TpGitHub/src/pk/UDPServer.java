@@ -14,15 +14,14 @@ public class UDPServer {
     private int clientPort = -1;
     private DatagramSocket serverSocket;
     
-
+    // initialize server port
     public UDPServer(int port) {
         this.port = port;
     }
-
     public void setMessageListener(MessageListener listener) {
         this.messageListener = listener;
     }
-
+    //starts server and  listens for incoming msg
     public void startServer() {
         try {
             serverSocket = new DatagramSocket(port);
@@ -82,15 +81,15 @@ public class UDPServer {
     public interface MessageListener {
         void onMessageReceived(String message);
     }
-    
+    // open browser
     private void openWebpage(String url) {
         try {
-            Desktop.getDesktop().browse(new URI(url));
+            Desktop.getDesktop().browse(new URI(url)); // bup desktop
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+    // chek is url
     private boolean isValidURL(String message) {
         return message.startsWith("www.") || message.startsWith("https://");
     }
