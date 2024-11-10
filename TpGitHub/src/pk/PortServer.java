@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.awt.event.ActionListener;
 
 public class PortServer extends JFrame {
 
@@ -92,7 +91,7 @@ public class PortServer extends JFrame {
         Main mainInstance = new Main();
         mainInstance.startServers(serverPort1, serverPort2);
     }
-
+    
     private boolean isPortAvailable(int port) {
         try (DatagramSocket socket = new DatagramSocket(port)) {
             return true;
