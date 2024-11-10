@@ -27,7 +27,7 @@ public class PortServer extends JFrame {
         });
     }
 
-    public PortServer() {
+    public PortServer() { //compnentes frame server 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 500, 400);
         contentPane = new JPanel();
@@ -64,11 +64,11 @@ public class PortServer extends JFrame {
         btnConnect.setBounds(335, 280, 100, 30);
         contentPane.add(btnConnect);
 
-        btnConnect.addActionListener(e -> {
+        btnConnect.addActionListener(e -> { //if click connect get in frame ports 
             try {
                 int serverPort1 = Integer.parseInt(textFieldPort1.getText());
                 int serverPort2 = Integer.parseInt(textFieldPort2.getText());
-                checkPorts(serverPort1, serverPort2);
+                checkPorts(serverPort1, serverPort2); //check ports 
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Please enter valid integer port numbers.", "Input Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -81,7 +81,7 @@ public class PortServer extends JFrame {
             return;
         }
 
-        if (!isPortAvailable(serverPort1) || !isPortAvailable(serverPort2)) {
+        if (!isPortAvailable(serverPort1) || !isPortAvailable(serverPort2)) { // ida kan mitwfar 
             JOptionPane.showMessageDialog(this, "One or both ports are already in use. Please choose different ports.", "Port Error", JOptionPane.ERROR_MESSAGE);
             textFieldPort1.setText(""); 
             textFieldPort2.setText(""); 
