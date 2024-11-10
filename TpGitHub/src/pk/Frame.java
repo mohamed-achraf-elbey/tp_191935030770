@@ -21,14 +21,14 @@ public class Frame extends JFrame {
     private JScrollPane scrollPane;
     private JButton btnSend;
     private JButton localhost;
-    public boolean GG;
+    public boolean SC;
     public int serverPort ; 
     public int portServerReciver ;
     private JLabel text1_4;
     @SuppressWarnings("deprecation")
 	public Frame(int position, boolean SC , int serverPort , int portServerReciver) {
     	
-        GG = SC;
+        this.SC = SC;
         this.serverPort = serverPort;
         this.portServerReciver = portServerReciver ;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -147,7 +147,7 @@ public class Frame extends JFrame {
                 try {
                     InetAddress localHost = InetAddress.getLocalHost();
                     String localIp = localHost.getHostAddress();
-                    if (GG) {
+                    if (SC) {
                         textFieldPort.setText(""+portServerReciver);
                         textFieldSenderIP.setText(localIp);
                         textFieldReceiverIP.setText(localIp);
@@ -202,12 +202,12 @@ public class Frame extends JFrame {
             showErrorDialog("All fields must be filled.");
             return false;
         }
-        if(message.isEmpty()&& GG) {
+        if(message.isEmpty()&& SC) {
         	showErrorDialog("Please type a message in Server 1");
             return false;
         }
         
-        if(message.isEmpty()&& !GG) {
+        if(message.isEmpty()&& !SC) {
         	showErrorDialog("Please type a message in Server 2");
             return false;
         }
@@ -237,7 +237,7 @@ public class Frame extends JFrame {
         return true; 
     }
 
-    private boolean isValidIPAddress(String ip) {
+    private boolean isValidIPAddress(String ip) { //chek ip use requ
         String ipPattern = 
             "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." + 
             "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." + 
@@ -246,7 +246,7 @@ public class Frame extends JFrame {
         return ip.matches(ipPattern);
     }
 
-    private void showErrorDialog(String message) {
+    private void showErrorDialog(String message) { //window fpr show error 
         JOptionPane.showMessageDialog(this, message, "Input Error", JOptionPane.ERROR_MESSAGE);
     }
 
