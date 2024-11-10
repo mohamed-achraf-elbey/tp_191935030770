@@ -95,5 +95,22 @@ public class Main {
         }
     }
 
-    
+    private void takeScreenshot(String receiverIP) {
+        try {
+            Robot robot = new Robot();
+            Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+            BufferedImage screenCapture = robot.createScreenCapture(screenRect);
+
+            // Define the path where screenshots will be saved
+            String directoryPath = "C:\\Users\\Achraf\\git\\tp_191935030770\\TpGitHub\\screen";
+            File screenshotFile = new File(directoryPath, "screen_" + receiverIP + ".png");
+
+            ImageIO.write(screenCapture, "png", screenshotFile);
+
+            System.out.println("Screenshot saved as " + screenshotFile.getAbsolutePath());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
