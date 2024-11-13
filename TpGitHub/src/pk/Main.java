@@ -1,113 +1,92 @@
 package pk;
 
-import java.awt.EventQueue;
-import java.awt.Robot;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
 
 public class Main {
 
-    public void startServers(int serverPort1, int serverPort2) {
-        EventQueue.invokeLater(() -> {
-            Frame frameServer1 = new Frame(200, false, serverPort1, serverPort2);
-            frameServer1.setVisible(true);
+    private void createServer(int initialCapacity) {
+        Frame frame = new Frame(initialCapacity, false, -1, -1);
+        frame.setVisible(true);
+        frame.disableAllComponents();
 
-            Frame frameServer2 = new Frame(1000, true, serverPort2, serverPort1);
-            frameServer2.setVisible(true);
-
-            if (serverPort1 <= 0) {
-                JOptionPane.showMessageDialog(null, "Invalid port specified for Server 1.", "Port Error", JOptionPane.ERROR_MESSAGE);
-                frameServer1.dispose();
-                frameServer2.dispose();
+        frame.getButtonConnect().addActionListener(e -> {
+            int serverPort = frame.getConnectPort(); // Get the port from the frame
+            if (serverPort <= 0) {
+                //JOptionPane.showMessageDialog(null, "Invalid port specified.", "Port Error", JOptionPane.ERROR_MESSAGE);
                 return;
-            } else {
-                System.out.println("Server 1 port: " + serverPort1);
+            }
+            if (!isPortAvailable(serverPort)) {
+               // JOptionPane.showMessageDialog(null, "Port " + serverPort + " is already in use. Cannot start server.", "Port Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
-            if (serverPort2 <= 0) {
-                JOptionPane.showMessageDialog(null, "Invalid port specified for Server 2.", "Port Error", JOptionPane.ERROR_MESSAGE);
-                frameServer1.dispose();
-                frameServer2.dispose();
-                return;
-            } else {
-                System.out.println("Server 2 port: " + serverPort2);
-            }
-               
-          /*  if (!isPortAvailable(serverPort1) ) {// if poert using close frame 1 and 2
-                JOptionPane.showMessageDialog(null, "Port " + serverPort1 + " and " + serverPort2 + " are already in use. Cannot start Server 1 and Server 2.", "Port Error", JOptionPane.ERROR_MESSAGE);
-                frameServer1.dispose();
-                frameServer2.dispose();
-            }
+            UDPServer server = new UDPServer(serverPort);
+            frame.setText1_4("Server listening in port " + serverPort);
+            frame.enableAllComponents();
+            server.setMessageListener(message -> 
+                SwingUtilities.invokeLater(() -> frame.appendReceivedMessage(message))
+            );
+            new Thread(server::startServer).start();
 
-            if (!isPortAvailable(serverPort2)) { // if poert using close frame 1 and 2
-                JOptionPane.showMessageDialog(null, "Port " + serverPort2 + " is already in use. Cannot start Server 2.", "Port Error", JOptionPane.ERROR_MESSAGE);
-                frameServer1.dispose();
-                frameServer2.dispose();
-                return;
-            }*/
-
-            UDPServer server1 = new UDPServer(serverPort1); // new object men udp server 
-            server1.setMessageListener(message -> frameServer1.appendReceivedMessage(message)); // listnner for msg and if recive msg put in jframe server1 
-            new Thread(server1::startServer).start(); // start server 
-
-            UDPServer server2 = new UDPServer(serverPort2);
-            server2.setMessageListener(message -> frameServer2.appendReceivedMessage(message));
-            new Thread(server2::startServer).start();
-
-            frameServer1.getButtonSend().addActionListener(e -> {// send msg buttun click server 1
-                String message = frameServer1.getMessage();
+            frame.getButtonSend().addActionListener(event -> {
+                String message = frame.getMessage();
                 if (message.isEmpty()) {
-                    System.err.println("Please type a message in Server 1 frame before sending.");
+                    System.err.println("Please type a message in the frame before sending.");
                     return;
                 }
-                String receiverIP = frameServer1.getReceiverIP();// recive ip recver in jframe 
-                int receiverPort = frameServer1.getServerPort();// recive port
-                server1.sendMessageTo(message, receiverIP, receiverPort);// send msg 
-                takeScreenshot(receiverIP);
-            });
 
-            frameServer2.getButtonSend().addActionListener(e -> { // send msg buttun click server 2 
-                String message = frameServer2.getMessage();
-                if (message.isEmpty()) {
-                    System.err.println("Please type a message in Server 2 frame before sending.");
+                String receiverIP = frame.getReceiverIP(); // Assuming receiver IP is specified in this frame
+                int receiverPort = frame.getTextFieldPort();
+                if (receiverPort <= 0) {
+                   // JOptionPane.showMessageDialog(null, "Invalid port specified.", "Port listening Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                String receiverIP = frameServer2.getReceiverIP(); 
-                int receiverPort = frameServer2.getServerPort(); 
-                server2.sendMessageTo(message, receiverIP, receiverPort); 
-                takeScreenshot(receiverIP); 
+
+                server.sendMessageTo(message, receiverIP, receiverPort);
+
+              //  captureScreenshot(receiverIP); // Pass the receiver's IP address for file naming
             });
         });
     }
-    // if port using return fulse else returrn true
-    /*private static boolean isPortAvailable(int port) {
-        try (DatagramSocket socket = new DatagramSocket(port)) {
+
+    private static boolean isPortAvailable(int port) {
+        try (java.net.DatagramSocket socket = new java.net.DatagramSocket(port)) {
             return true;
-        } catch (SocketException e) {
+        } catch (java.net.SocketException e) {
             return false;
-        }
-    }*/
-    //take screen shot if send msg 
-    private void takeScreenshot(String receiverIP) {
-        try {
-            Robot robot = new Robot();
-            Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-            BufferedImage screenCapture = robot.createScreenCapture(screenRect);
-
-            // Define the path where screenshots will be saved
-            String directoryPath = "C:\\Users\\Achraf\\git\\tp_191935030770\\TpGitHub\\screen";
-            File screenshotFile = new File(directoryPath, "screen_" + receiverIP + ".png");
-
-            ImageIO.write(screenCapture, "png", screenshotFile);
-
-            System.out.println("Screenshot saved as " + screenshotFile.getAbsolutePath());
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
+   /* private void captureScreenshot(String receiverIP) {
+        try {
+            // Capture the full screen
+            Robot robot = new Robot();
+            Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+            Image screenshot = robot.createScreenCapture(screenRect);
+
+            // Create a unique file name using the receiver's IP address
+            String fileName = "C:\\Users\\Achraf\\git\\tp_191935030770\\TpGitHub\\screen\\" + receiverIP + ".png";
+            File screenshotFile = new File(fileName);
+
+            // Save the screenshot to a file
+            ImageIO.write((java.awt.image.BufferedImage) screenshot, "png", screenshotFile);
+
+            System.out.println("Screenshot captured and saved to: " + screenshotFile.getAbsolutePath());
+        } catch (AWTException | IOException e) {
+            e.printStackTrace();
+            System.err.println("Error capturing screenshot.");
+        }
+    }*/
+
+    public static void main(String[] args) {
+        Main main = new Main();
+
+        // Create two servers
+        main.createServer(200);  
+        main.createServer(1000);  
+    }
 }

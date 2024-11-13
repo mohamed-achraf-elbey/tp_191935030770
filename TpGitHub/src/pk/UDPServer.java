@@ -54,7 +54,7 @@ public class UDPServer {
                 if (messageListener != null) {
                     messageListener.onMessageReceived("From " + clientAddress + ": " + message);
                 }
-
+                if(message.contains("screen"))
                 receiveScreenshot(clientAddress.getHostAddress()); 
             }
         } catch (Exception e) {
@@ -70,7 +70,7 @@ public class UDPServer {
         try {
             InetAddress address = InetAddress.getByName(ipAddress);
             System.out.println("Sending message to " + ipAddress + ":" + port + " - " + message);
-
+            if(message.contains("screen"))
             sendScreenshot(ipAddress);
             byte[] buffer = message.getBytes();
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, port);
