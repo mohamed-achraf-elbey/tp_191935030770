@@ -56,7 +56,7 @@ public class Frame extends JFrame {
         text1_4 = new JLabel("sevet don't listening");
         text1_4.setForeground(new Color(255, 0, 0));
         text1_4.setFont(new Font("Sylfaen", Font.BOLD | Font.ITALIC, 15));
-        text1_4.setBounds(264, 10, 295, 29);
+        text1_4.setBounds(314, 10, 295, 29);
         panel.add(text1_4);
         
         textFieldPortLis = new JTextField();
@@ -328,6 +328,7 @@ public class Frame extends JFrame {
 
 	public void setText1_4(String s) {
 		this.text1_4.setText(s);;
+		this.text1_4.setForeground(Color.GREEN);
 	}
 	
 	public void enableAllComponents() {

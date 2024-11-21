@@ -16,11 +16,11 @@ public class Main {
         frame.getButtonConnect().addActionListener(e -> {
             int serverPort = frame.getConnectPort(); // Get the port from the frame
             if (serverPort <= 0) {
-                //JOptionPane.showMessageDialog(null, "Invalid port specified.", "Port Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Invalid port specified.", "Port Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (!isPortAvailable(serverPort)) {
-               // JOptionPane.showMessageDialog(null, "Port " + serverPort + " is already in use. Cannot start server.", "Port Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Port " + serverPort + " is already in use. Cannot start server.", "Port Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -42,7 +42,7 @@ public class Main {
                 String receiverIP = frame.getReceiverIP(); // Assuming receiver IP is specified in this frame
                 int receiverPort = frame.getTextFieldPort();
                 if (receiverPort <= 0) {
-                   // JOptionPane.showMessageDialog(null, "Invalid port specified.", "Port listening Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Invalid port specified.", "Port listening Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
