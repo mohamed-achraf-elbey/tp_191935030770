@@ -88,7 +88,7 @@ public class UDPServer {
                 String chunkMessage = "chunk:" + i + ":" + chunks.size();
                 sendChunk(chunkMessage, chunkData, clientAddress.getHostAddress(), clientPort);
                 // Add delay to avoid sending too quickly
-                Thread.sleep(100);  // Adjust delay as needed (100ms)
+                Thread.sleep(200);  // Adjust delay as needed (100ms)
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,7 +100,6 @@ public class UDPServer {
             byte[] packetData = receivePacket.getData();
             String packetString = new String(packetData, 0, receivePacket.getLength(), "UTF-8");
 
-            // فصل النصوص عن البيانات باستخدام المحدد "|"
             int delimiterIndex = packetString.indexOf("|");
             if (delimiterIndex == -1) {
                 throw new IllegalArgumentException("Invalid packet format: no delimiter found");
@@ -159,7 +158,7 @@ public class UDPServer {
         byte[] imageData = baos.toByteArray();
 
         List<byte[]> chunks = new ArrayList<>();
-        int maxChunkSize = (64 * 1024) - 100; 
+        int maxChunkSize = (8 * 1024) - 100; 
 
         for (int i = 0; i < imageData.length; i += maxChunkSize) {
             int end = Math.min(imageData.length, i + maxChunkSize);
@@ -185,7 +184,7 @@ public class UDPServer {
         byte[] messageHeader = (chunkMessage + "|").getBytes("UTF-8");
 
         
-        if (messageHeader.length + chunkData.length > 64 * 1024) {
+        if (messageHeader.length + chunkData.length > 8 * 1024) {
             throw new IOException("Chunk size exceeds maximum UDP packet size");
         }
 
