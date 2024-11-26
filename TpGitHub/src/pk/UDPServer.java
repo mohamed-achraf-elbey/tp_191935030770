@@ -45,7 +45,7 @@ public class UDPServer {
             serverSocket = new DatagramSocket(port);
             System.out.println("Server is running on port " + port);
 
-            byte[] receiveData = new byte[64 * 1024]; // Buffer size: 64 KB
+            byte[] receiveData = new byte[64 * 1024]; 
             while (true) {
                 DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
@@ -116,15 +116,18 @@ public class UDPServer {
             
             receivedChunks.put(chunkIndex, chunkData);
 
-            
+            System.out.println("size receivedChunks = "+receivedChunks.size()+"\ntotalChunks = "+totalChunks);
             if (receivedChunks.size() == totalChunks) {
 
                 
                 List<byte[]> chunks = new ArrayList<>();
+                
                 for (int i = 0; i < totalChunks; i++) {
                     if (receivedChunks.containsKey(i)) {
+                    	
                         chunks.add(receivedChunks.get(i));
                     } else {
+                    	System.out.println("error recived chunk number : "+i);
                         return; 
                     }
                 }
@@ -146,6 +149,7 @@ public class UDPServer {
                 messageListener.onMessageReceived("From " + clientAddress + ": " + "screen save in screenRR");
 
                 receivedChunks.clear(); 
+                totalChunks = 0 ;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,7 +158,7 @@ public class UDPServer {
 
     private List<byte[]> splitImageToChunks(BufferedImage image) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", baos);
+        ImageIO.write(image,"png", baos);
         byte[] imageData = baos.toByteArray();
 
         List<byte[]> chunks = new ArrayList<>();

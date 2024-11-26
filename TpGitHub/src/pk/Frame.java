@@ -352,8 +352,4 @@ public class Frame extends JFrame {
 	    //connect.setEnabled(false);
 	    //textFieldPortLis.setEnabled(false);
 	}
-
-	
-
-
 }
